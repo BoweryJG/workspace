@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
+  ThemeProvider, 
   CssBaseline, 
   Box, 
   Container,
@@ -43,12 +44,9 @@ import {
   InputLabel,
   Collapse,
   Grow,
-  Zoom,
-  Menu,
-  Switch,
-  FormControlLabel
+  Zoom
 } from '@mui/material';
-import { ThemeProvider as MuiThemeProvider, alpha, styled } from '@mui/material/styles';
+import { createTheme, alpha, styled } from '@mui/material/styles';
 import {
   AutoAwesome as AIIcon,
   Search as SearchIcon,
@@ -73,36 +71,58 @@ import {
   Share as ShareIcon,
   Settings as SettingsIcon,
   Palette as PaletteIcon,
-  Person as PersonIcon,
-  Star as StarIcon,
-  StarBorder as StarBorderIcon,
-  VolumeUp as VolumeIcon,
-  VolumeOff as VolumeOffIcon,
-  DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon,
-  Keyboard as KeyboardIcon
+  Person as PersonIcon
 } from '@mui/icons-material';
 import { designTokens } from './styles/designTokens';
 
-// Import new components and hooks
-import { ThemeProvider, useTheme } from './contexts/ThemeContext';
-import CommandPalette from './components/CommandPalette';
-import Confetti from './components/Confetti';
-import { useKeyboardShortcuts, useGlobalShortcuts } from './hooks/useKeyboardShortcuts';
-import { useFavorites } from './hooks/useFavorites';
-import { useRecentSearches } from './hooks/useRecentSearches';
-import { useSoundEffects } from './hooks/useSoundEffects';
+// Create theme using design tokens
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: designTokens.colors.primary[500],
+      light: designTokens.colors.primary[400],
+      dark: designTokens.colors.primary[600],
+    },
+    secondary: {
+      main: designTokens.colors.accent[500],
+      light: designTokens.colors.accent[400],
+      dark: designTokens.colors.accent[600],
+    },
+    success: {
+      main: designTokens.colors.success[500],
+    },
+    background: {
+      default: designTokens.colors.background.primary,
+      paper: designTokens.colors.background.secondary,
+    },
+    text: {
+      primary: designTokens.colors.text.primary,
+      secondary: designTokens.colors.text.secondary,
+    }
+  },
+  typography: {
+    fontFamily: designTokens.typography.fontFamily.body,
+    h1: { fontSize: designTokens.typography.fontSize['5xl'], fontWeight: designTokens.typography.fontWeight.bold },
+    h2: { fontSize: designTokens.typography.fontSize['4xl'], fontWeight: designTokens.typography.fontWeight.semibold },
+    h3: { fontSize: designTokens.typography.fontSize['3xl'], fontWeight: designTokens.typography.fontWeight.semibold },
+    h4: { fontSize: designTokens.typography.fontSize['2xl'], fontWeight: designTokens.typography.fontWeight.medium },
+  },
+  shape: {
+    borderRadius: parseInt(designTokens.borderRadius.md),
+  },
+});
 
 // Styled components
 const GlassCard = styled(Card)(({ theme }) => ({
   background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette.secondary.main, 0.05)} 100%)`,
   backdropFilter: `blur(${designTokens.blur.lg})`,
-  border: `1px solid ${theme.palette.mode === 'dark' ? designTokens.colors.border.light : theme.palette.divider}`,
+  border: `1px solid ${designTokens.colors.border.light}`,
   transition: `all ${designTokens.animation.duration.base} ${designTokens.animation.easing.inOut}`,
   '&:hover': {
     transform: 'translateY(-2px)',
     boxShadow: designTokens.shadow.xl,
-    border: `1px solid ${theme.palette.mode === 'dark' ? designTokens.colors.border.medium : theme.palette.primary.main}`,
+    border: `1px solid ${designTokens.colors.border.medium}`,
   }
 }));
 
@@ -154,19 +174,15 @@ const mockProducts = [
 ];
 
 // Advanced DoctorSearchInput component
-const DoctorSearchInput = ({ value, onChange, favorites, onToggleFavorite }) => {
+const DoctorSearchInput = ({ value, onChange }) => {
   const [inputValue, setInputValue] = useState('');
-  const { play } = useSoundEffects();
 
   return (
     <StyledAutocomplete
       options={mockDoctors}
       getOptionLabel={(option) => option.name || ''}
       value={value}
-      onChange={(event, newValue) => {
-        onChange(newValue);
-        if (newValue) play('click');
-      }}
+      onChange={(event, newValue) => onChange(newValue)}
       inputValue={inputValue}
       onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
       renderInput={(params) => (
@@ -185,92 +201,140 @@ const DoctorSearchInput = ({ value, onChange, favorites, onToggleFavorite }) => 
           }}
         />
       )}
-      renderOption={(props, option) => {
-        const isFavorited = favorites.some(fav => fav.id === option.id);
-        return (
-          <ListItem {...props} sx={{ py: 2 }}>
-            <ListItemAvatar>
-              <Badge
-                overlap="circular"
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                badgeContent={
-                  option.verified ? (
-                    <VerifiedIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-                  ) : null
-                }
-              >
-                <Avatar sx={{ bgcolor: 'primary.main' }}>
-                  <PersonIcon />
-                </Avatar>
-              </Badge>
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Typography variant="body1" fontWeight="medium">
-                    {option.name}
-                  </Typography>
-                  <Chip
-                    label={option.specialty}
-                    size="small"
-                    color="secondary"
-                    sx={{ height: 20 }}
-                  />
-                </Stack>
+      renderOption={(props, option) => (
+        <ListItem {...props} sx={{ py: 2 }}>
+          <ListItemAvatar>
+            <Badge
+              overlap="circular"
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              badgeContent={
+                option.verified ? (
+                  <VerifiedIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                ) : null
               }
-              secondary={
-                <Stack direction="row" alignItems="center" spacing={2} mt={0.5}>
-                  <Typography variant="caption" color="text.secondary">
-                    <HospitalIcon sx={{ fontSize: 14, mr: 0.5, verticalAlign: 'middle' }} />
-                    {option.hospital}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    ⭐ {option.rating}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {option.patients} patients
-                  </Typography>
-                </Stack>
-              }
-            />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleFavorite(option);
-                  play('click');
-                }}
-              >
-                {isFavorited ? (
-                  <StarIcon sx={{ color: 'warning.main' }} />
-                ) : (
-                  <StarBorderIcon />
-                )}
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        );
-      }}
+            >
+              <Avatar sx={{ bgcolor: 'primary.main' }}>
+                <PersonIcon />
+              </Avatar>
+            </Badge>
+          </ListItemAvatar>
+          <ListItemText
+            primary={
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Typography variant="body1" fontWeight="medium">
+                  {option.name}
+                </Typography>
+                <Chip
+                  label={option.specialty}
+                  size="small"
+                  color="secondary"
+                  sx={{ height: 20 }}
+                />
+              </Stack>
+            }
+            secondary={
+              <Stack direction="row" alignItems="center" spacing={2} mt={0.5}>
+                <Typography variant="caption" color="text.secondary">
+                  <HospitalIcon sx={{ fontSize: 14, mr: 0.5, verticalAlign: 'middle' }} />
+                  {option.hospital}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  ⭐ {option.rating}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {option.patients} patients
+                </Typography>
+              </Stack>
+            }
+          />
+        </ListItem>
+      )}
     />
   );
 };
 
-// Main App component wrapped with theme
-function AppContent() {
-  const { mode, toggleTheme, theme } = useTheme();
-  const { favorites, toggleFavorite, isFavorited } = useFavorites();
-  const { recentSearches, addSearch } = useRecentSearches();
-  const { enabled: soundEnabled, toggleSound, play } = useSoundEffects();
-  
+// LocationPicker component
+const LocationPicker = ({ value, onChange }) => {
+  const locations = [
+    "New York, NY", "Los Angeles, CA", "Chicago, IL", "Houston, TX",
+    "Phoenix, AZ", "Philadelphia, PA", "San Antonio, TX", "San Diego, CA"
+  ];
+
+  return (
+    <Autocomplete
+      value={value}
+      onChange={(event, newValue) => onChange(newValue)}
+      options={locations}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="Select location"
+          variant="outlined"
+          fullWidth
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: (
+              <InputAdornment position="start">
+                <LocationIcon sx={{ color: 'text.secondary' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      )}
+    />
+  );
+};
+
+// ProductSelector component
+const ProductSelector = ({ value, onChange }) => {
+  return (
+    <Autocomplete
+      value={value}
+      onChange={(event, newValue) => onChange(newValue)}
+      options={mockProducts}
+      getOptionLabel={(option) => option.name || ''}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="Select product"
+          variant="outlined"
+          fullWidth
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: (
+              <InputAdornment position="start">
+                <ProductIcon sx={{ color: 'text.secondary' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      )}
+      renderOption={(props, option) => (
+        <ListItem {...props}>
+          <ListItemText
+            primary={option.name}
+            secondary={
+              <Stack direction="row" spacing={1} mt={0.5}>
+                <Chip label={option.category} size="small" variant="outlined" />
+                <Typography variant="caption" color="text.secondary">
+                  {option.indication}
+                </Typography>
+              </Stack>
+            }
+          />
+        </ListItem>
+      )}
+    />
+  );
+};
+
+// Main App component
+function App() {
   const [activeStep, setActiveStep] = useState(0);
   const [workflowType, setWorkflowType] = useState('doctor');
   const [showPreview, setShowPreview] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generatedReport, setGeneratedReport] = useState(null);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
-  const [settingsAnchor, setSettingsAnchor] = useState(null);
   
   // Form state
   const [doctor, setDoctor] = useState(null);
@@ -278,18 +342,6 @@ function AppContent() {
   const [product, setProduct] = useState(null);
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
-
-  // Global keyboard shortcuts
-  useGlobalShortcuts(
-    () => setCommandPaletteOpen(true),
-    () => {
-      setActiveStep(0);
-      setDoctor(null);
-      setLocation('');
-      setProduct(null);
-      play('whoosh');
-    }
-  );
 
   const steps = [
     { label: 'Select Workflow', icon: <DashboardIcon /> },
@@ -300,7 +352,6 @@ function AppContent() {
   ];
 
   const handleNext = () => {
-    play('click');
     if (activeStep === steps.length - 1) {
       generateReport();
     } else {
@@ -309,19 +360,12 @@ function AppContent() {
   };
 
   const handleBack = () => {
-    play('click');
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const generateReport = async () => {
     setGenerating(true);
     setShowPreview(true);
-    play('whoosh');
-    
-    // Add to recent searches
-    if (doctor) {
-      addSearch(doctor.name, 'doctor', doctor);
-    }
     
     // Simulate AI report generation
     setTimeout(() => {
@@ -345,29 +389,7 @@ function AppContent() {
         ]
       });
       setGenerating(false);
-      setShowConfetti(true);
-      play('success');
-      setTimeout(() => setShowConfetti(false), 3000);
     }, 3000);
-  };
-
-  const handleCommandPaletteSelect = (item) => {
-    switch (item.action) {
-      case 'new-report':
-        setActiveStep(0);
-        setDoctor(null);
-        setLocation('');
-        setProduct(null);
-        break;
-      case 'select-doctor':
-        setDoctor(item.data);
-        setActiveStep(1);
-        break;
-      case 'search':
-        // Handle search action
-        addSearch(item.data.query);
-        break;
-    }
   };
 
   const getStepContent = (step) => {
@@ -381,12 +403,7 @@ function AppContent() {
             <ToggleButtonGroup
               value={workflowType}
               exclusive
-              onChange={(e, newType) => {
-                if (newType) {
-                  setWorkflowType(newType);
-                  play('click');
-                }
-              }}
+              onChange={(e, newType) => newType && setWorkflowType(newType)}
               sx={{ mt: 2, mb: 3 }}
             >
               <ToggleButton value="doctor" sx={{ px: 4 }}>
@@ -421,12 +438,7 @@ function AppContent() {
             <Typography variant="h6" gutterBottom>
               Doctor Information
             </Typography>
-            <DoctorSearchInput 
-              value={doctor} 
-              onChange={setDoctor}
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-            />
+            <DoctorSearchInput value={doctor} onChange={setDoctor} />
             {doctor && (
               <Fade in={true}>
                 <GlassCard sx={{ mt: 3, p: 3 }}>
@@ -453,18 +465,6 @@ function AppContent() {
                         />
                       </Stack>
                     </Box>
-                    <IconButton
-                      onClick={() => {
-                        toggleFavorite(doctor);
-                        play('click');
-                      }}
-                    >
-                      {isFavorited(doctor.id) ? (
-                        <StarIcon sx={{ color: 'warning.main' }} />
-                      ) : (
-                        <StarBorderIcon />
-                      )}
-                    </IconButton>
                   </Stack>
                 </GlassCard>
               </Fade>
@@ -478,27 +478,7 @@ function AppContent() {
               Location & Contact Details
             </Typography>
             <Stack spacing={3}>
-              <Autocomplete
-                value={location}
-                onChange={(event, newValue) => setLocation(newValue)}
-                options={["New York, NY", "Los Angeles, CA", "Chicago, IL", "Houston, TX"]}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select location"
-                    variant="outlined"
-                    fullWidth
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LocationIcon sx={{ color: 'text.secondary' }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              />
+              <LocationPicker value={location} onChange={setLocation} />
               <TextField
                 fullWidth
                 label="Email Address"
@@ -535,46 +515,7 @@ function AppContent() {
             <Typography variant="h6" gutterBottom>
               Product Selection
             </Typography>
-            <Autocomplete
-              value={product}
-              onChange={(event, newValue) => {
-                setProduct(newValue);
-                if (newValue) play('click');
-              }}
-              options={mockProducts}
-              getOptionLabel={(option) => option.name || ''}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select product"
-                  variant="outlined"
-                  fullWidth
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <ProductIcon sx={{ color: 'text.secondary' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              )}
-              renderOption={(props, option) => (
-                <ListItem {...props}>
-                  <ListItemText
-                    primary={option.name}
-                    secondary={
-                      <Stack direction="row" spacing={1} mt={0.5}>
-                        <Chip label={option.category} size="small" variant="outlined" />
-                        <Typography variant="caption" color="text.secondary">
-                          {option.indication}
-                        </Typography>
-                      </Stack>
-                    }
-                  />
-                </ListItem>
-              )}
-            />
+            <ProductSelector value={product} onChange={setProduct} />
             {product && (
               <Fade in={true}>
                 <Alert severity="success" sx={{ mt: 3 }}>
@@ -619,58 +560,22 @@ function AppContent() {
   };
 
   return (
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ minHeight: '100vh', background: theme.palette.background.default }}>
+      <Box sx={{ minHeight: '100vh', background: designTokens.colors.background.primary }}>
         <AppBar position="static" elevation={0} sx={{ 
-          background: alpha(theme.palette.background.paper, 0.8),
+          background: alpha(designTokens.colors.background.secondary, 0.8),
           backdropFilter: `blur(${designTokens.blur.lg})`,
-          borderBottom: `1px solid ${theme.palette.divider}`
+          borderBottom: `1px solid ${designTokens.colors.border.light}`
         }}>
           <Toolbar>
             <AIIcon sx={{ mr: 2, color: 'secondary.main' }} />
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
               RepSpheres Intelligence
             </Typography>
-            
-            <Tooltip title="Keyboard shortcuts">
-              <IconButton color="inherit" onClick={() => setCommandPaletteOpen(true)}>
-                <KeyboardIcon />
-              </IconButton>
-            </Tooltip>
-            
-            <Tooltip title="Toggle theme">
-              <IconButton color="inherit" onClick={toggleTheme}>
-                {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-              </IconButton>
-            </Tooltip>
-            
-            <IconButton 
-              color="inherit"
-              onClick={(e) => setSettingsAnchor(e.currentTarget)}
-            >
+            <IconButton color="inherit">
               <SettingsIcon />
             </IconButton>
-            
-            <Menu
-              anchorEl={settingsAnchor}
-              open={Boolean(settingsAnchor)}
-              onClose={() => setSettingsAnchor(null)}
-            >
-              <MenuItem>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={soundEnabled}
-                      onChange={toggleSound}
-                      icon={<VolumeOffIcon />}
-                      checkedIcon={<VolumeIcon />}
-                    />
-                  }
-                  label="Sound Effects"
-                />
-              </MenuItem>
-            </Menu>
           </Toolbar>
         </AppBar>
 
@@ -680,9 +585,9 @@ function AppContent() {
             <Grid item xs={12} md={showPreview ? 6 : 8}>
               <Paper sx={{ 
                 p: 4, 
-                background: alpha(theme.palette.background.paper, 0.5),
+                background: alpha(designTokens.colors.background.secondary, 0.5),
                 backdropFilter: `blur(${designTokens.blur.base})`,
-                border: `1px solid ${theme.palette.divider}`
+                border: `1px solid ${designTokens.colors.border.light}`
               }}>
                 <Stepper activeStep={activeStep} orientation="vertical">
                   {steps.map((step, index) => (
@@ -739,9 +644,9 @@ function AppContent() {
                 <Zoom in={showPreview}>
                   <Paper sx={{ 
                     p: 4, 
-                    background: alpha(theme.palette.background.paper, 0.5),
+                    background: alpha(designTokens.colors.background.secondary, 0.5),
                     backdropFilter: `blur(${designTokens.blur.base})`,
-                    border: `1px solid ${theme.palette.divider}`,
+                    border: `1px solid ${designTokens.colors.border.light}`,
                     height: '100%'
                   }}>
                     <Typography variant="h5" gutterBottom>
@@ -804,7 +709,6 @@ function AppContent() {
                               variant="contained" 
                               startIcon={<DownloadIcon />}
                               fullWidth
-                              onClick={() => play('click')}
                             >
                               Download Report
                             </Button>
@@ -812,7 +716,6 @@ function AppContent() {
                               variant="outlined" 
                               startIcon={<ShareIcon />}
                               fullWidth
-                              onClick={() => play('click')}
                             >
                               Share
                             </Button>
@@ -869,83 +772,11 @@ function AppContent() {
                     </Stack>
                   </CardContent>
                 </GlassCard>
-                
-                {/* Recent Searches */}
-                {recentSearches.length > 0 && (
-                  <GlassCard>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        Recent Searches
-                      </Typography>
-                      <List dense>
-                        {recentSearches.slice(0, 3).map((search) => (
-                          <ListItem 
-                            key={search.id}
-                            button
-                            onClick={() => {
-                              if (search.type === 'doctor' && search.data) {
-                                setDoctor(search.data);
-                                setActiveStep(1);
-                              }
-                              play('click');
-                            }}
-                          >
-                            <ListItemText 
-                              primary={search.query}
-                              secondary={search.formattedTimestamp}
-                            />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </CardContent>
-                  </GlassCard>
-                )}
               </Stack>
             </Grid>
           </Grid>
         </Container>
-        
-        {/* Command Palette */}
-        <CommandPalette
-          open={commandPaletteOpen}
-          onClose={() => setCommandPaletteOpen(false)}
-          onSelect={handleCommandPaletteSelect}
-          recentSearches={recentSearches}
-          favorites={favorites}
-        />
-        
-        {/* Confetti */}
-        <Confetti active={showConfetti} />
-        
-        {/* Keyboard Shortcuts Help */}
-        <Box sx={{ 
-          position: 'fixed', 
-          bottom: 20, 
-          right: 20,
-          display: 'flex',
-          gap: 1
-        }}>
-          <Chip
-            size="small"
-            label="⌘K Search"
-            sx={{ opacity: 0.7 }}
-          />
-          <Chip
-            size="small"
-            label="⌘N New Report"
-            sx={{ opacity: 0.7 }}
-          />
-        </Box>
       </Box>
-    </MuiThemeProvider>
-  );
-}
-
-// Main App component
-function App() {
-  return (
-    <ThemeProvider>
-      <AppContent />
     </ThemeProvider>
   );
 }
