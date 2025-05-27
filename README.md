@@ -1,6 +1,6 @@
-# repSpheres Frontend
+# RepSpheres Intelligence - Advanced UI
 
-A modern web application for medical sales representatives to generate AI-powered doctor reports.
+Advanced sales intelligence platform with AI-powered insights for healthcare professionals.
 
 ## Features
 
