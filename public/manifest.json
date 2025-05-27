@@ -1,0 +1,42 @@
+{
+  "name": "RepSpheres - Sales Intelligence Platform",
+  "short_name": "RepSpheres",
+  "description": "AI-powered sales intelligence platform for medical professionals",
+  "theme_color": "#1976d2",
+  "background_color": "#121212",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "medical", "productivity"],
+  "shortcuts": [
+    {
+      "name": "New Search",
+      "short_name": "Search",
+      "description": "Start a new doctor search",
+      "url": "/?action=new-search",
+      "icons": [{ "src": "/search-icon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Recent Reports",
+      "short_name": "Recent",
+      "description": "View recent reports",
+      "url": "/?action=recent",
+      "icons": [{ "src": "/recent-icon.png", "sizes": "96x96" }]
+    }
+  ]
+}

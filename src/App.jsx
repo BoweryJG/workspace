@@ -88,6 +88,7 @@ import { designTokens } from './styles/designTokens';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import CommandPalette from './components/CommandPalette';
 import Confetti from './components/Confetti';
+import { PWAPrompt } from './components/PWAPrompt';
 import { useKeyboardShortcuts, useGlobalShortcuts } from './hooks/useKeyboardShortcuts';
 import { useFavorites } from './hooks/useFavorites';
 import { useRecentSearches } from './hooks/useRecentSearches';
@@ -916,6 +917,9 @@ function AppContent() {
         
         {/* Confetti */}
         <Confetti active={showConfetti} />
+        
+        {/* PWA Prompt */}
+        <PWAPrompt />
         
         {/* Keyboard Shortcuts Help */}
         <Box sx={{ 
