@@ -1,0 +1,472 @@
+<\!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RepSpheres Intelligence - Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #050511;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(10, 10, 20, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #8A74F9 0%, #00D4FF 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        /* Glass Card */
+        .glass-card {
+            background: linear-gradient(135deg, rgba(138, 116, 249, 0.1) 0%, rgba(0, 212, 255, 0.05) 100%);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Workflow Selector */
+        .workflow-selector {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .workflow-btn {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-btn.active {
+            background: linear-gradient(135deg, #8A74F9 0%, #00D4FF 100%);
+            border-color: transparent;
+        }
+        
+        /* Doctor Search */
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #00D4FF;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+        }
+        
+        /* Doctor Profile Card */
+        .doctor-card {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(138, 116, 249, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .doctor-avatar {
+            width: 60px;
+            height: 60px;
+            background: #8A74F9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: relative;
+        }
+        
+        .verified-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 20px;
+            height: 20px;
+            background: #10B981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #050511;
+        }
+        
+        .doctor-info h3 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .doctor-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 212, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #00D4FF;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .stat-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8A74F9 0%, #00D4FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.3;
+        }
+        
+        /* Gradient Button */
+        .gradient-btn {
+            background: linear-gradient(135deg, #8A74F9 0%, #00D4FF 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        /* Report Preview */
+        .report-preview {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+        
+        .insights-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .insights-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .insights-list li:last-child {
+            border-bottom: none;
+        }
+        
+        /* Stepper */
+        .stepper {
+            margin: 2rem 0;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            width: 2px;
+            height: calc(100% + 1rem);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            background: #8A74F9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .step.inactive .step-icon {
+            background: #333;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        /* Preview Panel */
+        .preview-panel {
+            position: fixed;
+            right: 0;
+            top: 80px;
+            bottom: 0;
+            width: 40%;
+            background: rgba(10, 10, 20, 0.95);
+            backdrop-filter: blur(16px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .preview-panel.active {
+            transform: translateX(0);
+        }
+        
+        /* Loading */
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .loading-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8A74F9 0%, #00D4FF 100%);
+            animation: loading 2s ease-in-out infinite;
+        }
+        
+        @keyframes loading {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">✨</div>
+            RepSpheres Intelligence
+        </div>
+        <button class="gradient-btn">Settings</button>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="glass-card">
+                <h2>AI-Powered Sales Intelligence</h2>
+                
+                <div class="stepper">
+                    <div class="step active">
+                        <div class="step-icon">📊</div>
+                        <div class="step-content">
+                            <div class="step-title">Select Workflow</div>
+                            <div class="workflow-selector">
+                                <div class="workflow-btn active">
+                                    <div>👨‍⚕️</div>
+                                    <div>Doctor Report</div>
+                                </div>
+                                <div class="workflow-btn">
+                                    <div>📈</div>
+                                    <div>Market Intel</div>
+                                </div>
+                                <div class="workflow-btn">
+                                    <div>🧠</div>
+                                    <div>Sales Strategy</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step active">
+                        <div class="step-icon">🔍</div>
+                        <div class="step-content">
+                            <div class="step-title">Doctor Information</div>
+                            <div style="position: relative;">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" class="search-input" placeholder="Search for a doctor..." value="Dr. Sarah Chen">
+                            </div>
+                            <div class="doctor-card">
+                                <div class="doctor-avatar">
+                                    SC
+                                    <div class="verified-badge">✓</div>
+                                </div>
+                                <div class="doctor-info">
+                                    <h3>Dr. Sarah Chen</h3>
+                                    <div>Cardiology at Mayo Clinic</div>
+                                    <div class="doctor-meta">
+                                        <span class="badge">Verified</span>
+                                        <span>⭐ 4.9</span>
+                                        <span>1,250 patients</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step inactive">
+                        <div class="step-icon">📍</div>
+                        <div class="step-content">
+                            <div class="step-title">Location & Contact</div>
+                        </div>
+                    </div>
+                    
+                    <div class="step inactive">
+                        <div class="step-icon">💊</div>
+                        <div class="step-content">
+                            <div class="step-title">Product Selection</div>
+                        </div>
+                    </div>
+                    
+                    <div class="step inactive">
+                        <div class="step-icon">✨</div>
+                        <div class="step-content">
+                            <div class="step-title">Generate Report</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="gradient-btn">Continue</button>
+            </div>
+        </div>
+        
+        <div class="stats-sidebar">
+            <div class="glass-card stat-card">
+                <div>
+                    <div class="stat-value">1,234</div>
+                    <div class="stat-label">Reports Generated</div>
+                </div>
+                <div class="stat-icon">📊</div>
+            </div>
+            
+            <div class="glass-card stat-card">
+                <div>
+                    <div class="stat-value">89%</div>
+                    <div class="stat-label">Accuracy Rate</div>
+                </div>
+                <div class="stat-icon">📈</div>
+            </div>
+            
+            <div class="glass-card stat-card">
+                <div>
+                    <div class="stat-value">342</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-icon">👥</div>
+            </div>
+            
+            <div class="glass-card">
+                <h3>Recent Reports</h3>
+                <div class="report-preview">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4>AI Intelligence Report</h4>
+                        <span class="badge">Score: 85/100</span>
+                    </div>
+                    <div class="loading-bar">
+                        <div class="loading-fill"></div>
+                    </div>
+                    <p style="opacity: 0.7; font-size: 0.875rem;">Generating comprehensive report...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+EOF < /dev/null
