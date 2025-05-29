@@ -13,6 +13,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import { fetchPrompts } from '../utils/supabaseClient';
+import ReportTypeToggle from './ReportTypeToggle';
 
 const PromptSelector = ({ onSubmit, isAestheticMode = false }) => {
   const [prompts, setPrompts] = useState([]);
@@ -21,6 +22,7 @@ const PromptSelector = ({ onSubmit, isAestheticMode = false }) => {
   const [error, setError] = useState(null);
   const [additionalInfo, setAdditionalInfo] = useState({});
   const [showAdditionalFields, setShowAdditionalFields] = useState(false);
+  const [selectedReportType, setSelectedReportType] = useState('pre-call');
 
   // Fetch prompts from Supabase
   useEffect(() => {
@@ -70,6 +72,26 @@ const PromptSelector = ({ onSubmit, isAestheticMode = false }) => {
       ...prev,
       [name]: value
     }));
+  };
+
+  // Filter prompts by selected report type
+  const filteredPrompts = prompts.filter(prompt => {
+    if (!selectedReportType) return true;
+    return prompt.report_type === selectedReportType;
+  });
+
+  // Count prompts by type for the toggle
+  const promptCounts = prompts.reduce((acc, prompt) => {
+    const type = prompt.report_type;
+    acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {});
+
+  const handleReportTypeChange = (newType) => {
+    setSelectedReportType(newType);
+    setSelectedPrompt(''); // Reset selected prompt when type changes
+    setAdditionalInfo({});
+    setShowAdditionalFields(false);
   };
 
   const handleSubmit = (e) => {
@@ -202,8 +224,14 @@ const PromptSelector = ({ onSubmit, isAestheticMode = false }) => {
       </Typography>
 
       <Typography variant="body1" sx={{ mb: 3, opacity: 0.9 }}>
-        Choose a prompt template to generate your content.
+        Choose a report type and prompt template to generate your content.
       </Typography>
+
+      <ReportTypeToggle
+        value={selectedReportType}
+        onChange={handleReportTypeChange}
+        promptCounts={promptCounts}
+      />
 
       <FormControl 
         fullWidth 
@@ -238,7 +266,7 @@ const PromptSelector = ({ onSubmit, isAestheticMode = false }) => {
           label="Select Prompt"
           onChange={handlePromptChange}
         >
-          {prompts.map((prompt) => (
+          {filteredPrompts.map((prompt) => (
             <MenuItem key={prompt.id} value={prompt.id}>
               {prompt.prompt_name} - {prompt.report_type}
             </MenuItem>
