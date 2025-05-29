@@ -19,8 +19,8 @@ import LoginIcon from '@mui/icons-material/Login';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import MemoryIcon from '@mui/icons-material/Memory';
-import OrbLogo from './OrbLogo';
-import ThemeToggle from './ThemeToggle';
+import { useOrbContext } from '../OrbContextProvider';
+import ThemeToggle from '../components/ThemeToggle';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -73,7 +73,7 @@ const getNavLinks = (currentUrl) => {
   if (currentUrl.includes('/workspace')) {
     links = links.filter(link => link.key !== 'workspace');
   }
-  
+
   return links;
 };
 
@@ -85,7 +85,7 @@ const moreMenuItems = [
   { label: 'Legal', href: 'https://repspheres.com/legal' }
 ];
 
-export default function NavBar({ isAestheticMode, toggleAestheticMode }) {
+export default function NavBar() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const theme = useTheme();
@@ -93,11 +93,27 @@ export default function NavBar({ isAestheticMode, toggleAestheticMode }) {
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   
   // Get current URL to determine which page we're on
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const currentUrl = window.location.href;
 
   // Get navigation links based on current page
   const navLinks = getNavLinks(currentUrl);
   
+  // Get the gradient colors from context
+  const { gradientColors } = useOrbContext();
+
+  // Orb SVG for brand logo with gradient colors
+  const orb = (
+    <svg width="100%" height="100%" viewBox="0 0 32 32" style={{ filter: 'drop-shadow(0 0 6px #7B42F6AA)' }}>
+      <defs>
+        <radialGradient id="orbGrad" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stopColor={gradientColors.start} />
+          <stop offset="100%" stopColor={gradientColors.end} />
+        </radialGradient>
+      </defs>
+      <circle cx="16" cy="16" r="14" fill="url(#orbGrad)" opacity="0.85" />
+      <circle cx="16" cy="16" r="8" fill="#fff" opacity="0.08" />
+    </svg>
+  );
   
   // Handle drawer toggle
   const toggleDrawer = (open) => (event) => {
@@ -194,13 +210,13 @@ export default function NavBar({ isAestheticMode, toggleAestheticMode }) {
         mb: 4, 
         mt: 2,
         cursor: 'pointer'
-      }} onClick={() => typeof window !== 'undefined' && (window.location.href = 'https://repspheres.com')}>
-        <Box sx={{
-          width: 32,
-          height: 32,
-          mr: 1.5
+      }} onClick={() => window.location.href = 'https://repspheres.com'}>
+        <Box sx={{ 
+          width: 32, 
+          height: 32, 
+          mr: 1.5 
         }}>
-          <OrbLogo size="100%" />
+          {orb}
         </Box>
         <Box sx={{ 
           fontSize: '1.2rem', 
@@ -259,7 +275,21 @@ export default function NavBar({ isAestheticMode, toggleAestheticMode }) {
           </ListItem>
         ))}
         
-
+        {/* Theme Toggle in Drawer */}
+        <ListItem disablePadding sx={{ mt: 2 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between', 
+            width: '100%', 
+            p: 2,
+            borderRadius: '8px',
+            bgcolor: 'rgba(255,255,255,0.05)'
+          }}>
+            <span>Toggle Theme</span>
+            <ThemeToggle />
+          </Box>
+        </ListItem>
       </List>
       
       {/* Auth Buttons */}
@@ -330,14 +360,14 @@ export default function NavBar({ isAestheticMode, toggleAestheticMode }) {
             color: 'inherit'
           }}
         >
-          <Box sx={{
+          <Box sx={{ 
             display: 'flex',
             alignItems: 'center',
             mr: 1,
             width: { xs: 28, sm: 32 },
             height: { xs: 28, sm: 32 }
           }}>
-            <OrbLogo size="100%" />
+            {orb}
           </Box>
           
           <Box sx={{ 
@@ -411,19 +441,6 @@ export default function NavBar({ isAestheticMode, toggleAestheticMode }) {
           ml: 'auto',
           gap: { xs: 0.5, sm: 1 },
         }}>
-          {/* Theme Toggle - Subtle but visible */}
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            mr: 1,
-            opacity: 0.8,
-          }}>
-            <ThemeToggle
-              isAestheticMode={isAestheticMode}
-              toggleAestheticMode={toggleAestheticMode}
-            />
-          </Box>
-          
           {/* Auth Buttons - Always visible except on very small screens */}
           <Box sx={{
             display: 'flex',
@@ -466,7 +483,8 @@ export default function NavBar({ isAestheticMode, toggleAestheticMode }) {
             <IconButton
               aria-label="more options"
               aria-controls="menu-appbar"
-              aria-haspopup="true"              onClick={handleMenuOpen}
+              aria-haspopup="true"
+              onClick={handleMenuOpen}
               sx={{ 
                 ml: 0.5, 
                 color: '#fff',
@@ -503,6 +521,20 @@ export default function NavBar({ isAestheticMode, toggleAestheticMode }) {
               }
             }}
           >
+            {/* Theme Toggle */}
+            <MenuItem onClick={handleMenuClose}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between', 
+                width: '100%',
+                color: '#fff'
+              }}>
+                <span>Toggle Theme</span>
+                <ThemeToggle />
+              </Box>
+            </MenuItem>
+
             <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', my: 1 }} />
 
             {/* More Menu Items */}
