@@ -13,7 +13,7 @@ import {
 import api from './api';
 
 // Import NavBar component
-import NavBar from './components/NavBar';
+import NavBar from './components/Navbar';
 import LocalNavBar from './components/LocalNavBar';
 
 // Import components
