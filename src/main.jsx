@@ -1,21 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import { CssBaseline } from '@mui/material';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { AuthProvider } from './contexts/AuthContext';
-import { DemoProvider } from './contexts/DemoContext';
-import './index.css';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { ThemeProvider } from '@mui/material/styles'
+import { CssBaseline } from '@mui/material'
+import { ThemeProvider as CustomThemeProvider } from './contexts/ThemeContext'
+import RepSpheresApp from './components/RepSpheresApp'
+import { designTokens } from './styles/designTokens'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider>
-      <AuthProvider>
-        <DemoProvider>
-          <CssBaseline />
-          <App />
-        </DemoProvider>
-      </AuthProvider>
-    </ThemeProvider>
-  </React.StrictMode>
-);
+    <CustomThemeProvider>
+      <CssBaseline />
+      <RepSpheresApp />
+    </CustomThemeProvider>
+  </React.StrictMode>,
+  document.getElementById('root')
+)
