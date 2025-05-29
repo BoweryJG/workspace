@@ -9,8 +9,8 @@ if (supabaseUrl && supabaseKey) {
   supabase = createClient(supabaseUrl, supabaseKey);
 }
 
-// API URL from environment variables
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// API URL from environment variables with production fallback
+const API_URL = import.meta.env.VITE_API_URL || 'https://osbackend-zl1h.onrender.com';
 
 // Debug log for API URL configuration
 console.log('API URL Configuration:', { 
