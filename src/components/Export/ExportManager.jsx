@@ -41,7 +41,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { designTokens } from '../../styles/designTokens';
 
-const ExportManager = ({ data, reportType = 'doctor-report' }) => {
+const ExportManager = ({ data, reportType = 'pre-call' }) => {
   const [exportFormat, setExportFormat] = useState('pdf');
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);

@@ -85,7 +85,7 @@ const RepSpheresApp = () => {
     location: '',
     product: '',
     timeframe: '6 months',
-    reportType: 'comprehensive'
+    reportType: 'pre-call'
   });
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -133,7 +133,7 @@ const RepSpheresApp = () => {
       location: '',
       product: '',
       timeframe: '6 months',
-      reportType: 'comprehensive'
+      reportType: 'pre-call'
     });
     setSelectedDoctor(null);
     setSelectedLocation(null);
