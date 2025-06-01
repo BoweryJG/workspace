@@ -12,7 +12,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.17.1",
     "@mui/material": "^5.15.14",
-    "@supabase/supabase-js": "^2.39.7",
+    "@supabase/supabase-js": "^2.49.8",
     "@vitejs/plugin-react": "^4.4.1",
     "axios": "^1.6.7",
     "framer-motion": "^6.5.1",
@@ -25,6 +25,6 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "vite": "^4.4.9"
+    "vite": "^4.5.14"
   }
 }
