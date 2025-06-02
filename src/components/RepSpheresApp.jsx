@@ -293,18 +293,16 @@ const RepSpheresApp = () => {
         .from('public_contacts')
         .select(`
           id,
-          full_name,
+          first_name,
+          last_name,
           email,
           phone,
-          specialty,
-          city,
-          state,
-          hubspot_score,
-          sales_touches,
-          contact_owner,
-          platform
+          specialization,
+          practice_name,
+          title,
+          status
         `)
-        .eq('is_active', true)
+        .eq('status', 'active')
         .order('created_at', { ascending: false })
         .limit(50);
       
@@ -1685,8 +1683,8 @@ const RepSpheresApp = () => {
                     <ContactPhone />
                   </ListItemIcon>
                   <ListItemText
-                    primary={contact.full_name}
-                    secondary={`${contact.specialty} • ${contact.city}, ${contact.state} • Score: ${contact.hubspot_score}`}
+                    primary={`${contact.first_name} ${contact.last_name}`}
+                    secondary={`${contact.specialization || 'N/A'} • ${contact.practice_name || 'Unknown Practice'}`}
                   />
                   <ListItemSecondaryAction>
                     <Chip 
