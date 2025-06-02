@@ -2,6 +2,7 @@
 
 // Get the API key from environment variables
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+console.log('🔑 OpenRouter API Key loaded:', OPENROUTER_API_KEY ? 'Available' : 'Missing');
 
 /**
  * Generate content using the OpenRouter API
