@@ -7,7 +7,7 @@
 [build.environment]
   NODE_VERSION = "18"
   VITE_API_URL = "https://osbackend-zl1h.onrender.com/task"
-  VITE_OPENROUTER_API_KEY = "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"
+  VITE_OPENROUTER_API_KEY = "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"
 
 [[redirects]]
   from = "/*"
