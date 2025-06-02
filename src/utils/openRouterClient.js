@@ -28,6 +28,13 @@ export const generateContent = async (prompt, model = 'openai/gpt-4o', systemPro
     // Use the provided system prompt or the default
     const finalSystemPrompt = systemPrompt || defaultSystemPrompt;
     
+    console.log('📋 Request details:', {
+      url: 'https://openrouter.ai/api/v1/chat/completions',
+      method: 'POST',
+      model: model,
+      authHeader: `Bearer ${OPENROUTER_API_KEY.substring(0, 20)}...`
+    });
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -50,6 +57,9 @@ export const generateContent = async (prompt, model = 'openai/gpt-4o', systemPro
         ]
       })
     });
+
+    console.log('📨 Response status:', response.status);
+    console.log('📨 Response headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
