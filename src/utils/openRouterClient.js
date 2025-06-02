@@ -33,8 +33,8 @@ export const generateContent = async (prompt, model = 'openai/gpt-4o', systemPro
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'HTTP-Referer': window.location.origin,
-        'X-Title': 'RepSpheres AI Hub'
+        'HTTP-Referer': 'https://workspace.repspheres.com',
+        'X-Title': 'RepSpheres AI Workspace'
       },
       body: JSON.stringify({
         model: model,
