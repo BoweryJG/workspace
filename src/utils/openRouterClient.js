@@ -15,6 +15,8 @@ export const generateContent = async (prompt, model = 'openai/gpt-4o', systemPro
   try {
     console.log('🚀 Generating content with model:', model);
     console.log('🔑 API Key check:', OPENROUTER_API_KEY ? 'Present' : 'Missing');
+    console.log('🔑 API Key length:', OPENROUTER_API_KEY?.length);
+    console.log('🔑 API Key starts with:', OPENROUTER_API_KEY?.substring(0, 15));
     
     if (!OPENROUTER_API_KEY) {
       throw new Error('OpenRouter API key not found. Please set VITE_OPENROUTER_API_KEY in environment variables.');
