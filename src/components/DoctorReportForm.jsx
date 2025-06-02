@@ -41,7 +41,7 @@ const DoctorReportForm = ({
       }
 
       // Generate content using the OpenRouter API
-      const model = selectedPromptData?.model || 'gpt-4o';
+      const model = selectedPromptData?.model || 'openai/gpt-4o';
       const systemPrompt = 'You are an expert medical marketing assistant. Generate detailed, professional reports for doctors based on the provided information.';
       
       const generatedContent = await generateContent(promptContent, model, systemPrompt);
