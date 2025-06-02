@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Container, Fade, ThemeProvider, CssBaseline, AppBar, Toolbar, Typography, Button } from '@mui/material';
+import GlobalNavBar from './components/GlobalNavBar';
 import AIModelsView from './components/AIModelsView';
 import RepSpheresApp from './components/RepSpheresApp';
 import { repSpheresTheme } from './theme/repSpheresTheme';
@@ -11,10 +12,12 @@ function App() {
     <ThemeProvider theme={repSpheresTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-        <AppBar position="static" sx={{ mb: 4 }}>
+        <GlobalNavBar />
+        
+        <AppBar position="static" sx={{ mb: 4, mt: 2 }}>
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
-              RepSpheres AI
+              RepSpheres AI Workspace
             </Typography>
             <Button 
               color="inherit" 
