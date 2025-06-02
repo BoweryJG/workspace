@@ -290,7 +290,7 @@ const RepSpheresApp = () => {
     try {
       // This will be from Sphere OS database
       const { data, error } = await supabase
-        .from('dentalus2025master')
+        .from('public_contacts')
         .select(`
           id,
           full_name,
