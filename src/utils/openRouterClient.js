@@ -14,6 +14,7 @@ console.log('🔑 OpenRouter API Key loaded:', OPENROUTER_API_KEY ? 'Available' 
 export const generateContent = async (prompt, model = 'openai/gpt-4o', systemPrompt = '') => {
   try {
     console.log('🚀 Generating content with model:', model);
+    console.log('🔄 Cache bust - forcing new build');
     console.log('🔑 API Key check:', OPENROUTER_API_KEY ? 'Present' : 'Missing');
     console.log('🔑 API Key length:', OPENROUTER_API_KEY?.length);
     console.log('🔑 API Key starts with:', OPENROUTER_API_KEY?.substring(0, 15));
